@@ -1,0 +1,42 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  name        String
+  password    String
+  age         Int?
+  income      Float?
+  expenses    Float?
+  riskScore   Int?
+  riskProfile String?
+  createdAt   DateTime   @default(now())
+  fraudLogs   FraudLog[]
+  loginLogs   LoginLog[]
+}
+
+model FraudLog {
+  id              String   @id @default(cuid())
+  userId          String
+  transactionData String
+  reason          String
+  flaggedAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  ipAddress String?
+  userAgent String?
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
